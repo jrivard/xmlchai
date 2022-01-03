@@ -252,6 +252,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <notimestamp>true</notimestamp>
                             <skip>${skipJavadoc}</skip>
                             <failOnError>true</failOnError>
                             <failOnWarnings>true</failOnWarnings>

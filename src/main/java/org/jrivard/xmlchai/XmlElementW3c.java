@@ -74,7 +74,7 @@ class XmlElementW3c implements XmlElement
 
     private void modificationCheck()
     {
-        if ( xmlDocument != null && xmlDocument.getModifyMode() == AccessMode.IMMUTABLE )
+        if ( xmlDocument != null && xmlDocument.getAccessMode() == AccessMode.IMMUTABLE )
         {
             throw new UnsupportedOperationException( "parent XmlDocument has modify mode set to immutable" );
         }

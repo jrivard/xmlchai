@@ -80,7 +80,7 @@ class XmlDocumentW3c implements XmlDocument
         return factory;
     }
 
-    public AccessMode getModifyMode()
+    public AccessMode getAccessMode()
     {
         return accessMode;
     }

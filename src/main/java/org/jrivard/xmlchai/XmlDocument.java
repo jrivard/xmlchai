@@ -28,14 +28,39 @@ import java.util.Optional;
  */
 public interface XmlDocument
 {
+    /**
+     * Get the top level root element for the document.
+     * @return The top level root element for the document.
+     */
     XmlElement getRootElement();
 
+    /**
+     * Execute the xpath query and return the first matching element, if any.
+     * @param xpathExpression A valid xpath expression.
+     * @return Return the first matching element, if any.
+     * @throws NullPointerException if the {@code xpathExpression} is null.
+     */
     Optional<XmlElement> evaluateXpathToElement( String xpathExpression );
 
+    /**
+     * Execute the xpath query and return all the matching elements, if any.
+     * @param xpathExpression A valid xpath expression.
+     * @return Return all the matching elements, if any.
+     * @throws NullPointerException if the {@code xpathExpression} is null.
+     */
     List<XmlElement> evaluateXpathToElements( String xpathExpression );
 
+    /**
+     * Make a copy of the entire document.  The {@code AccessMode} of the copied
+     * document will be {@link AccessMode#MUTABLE}.
+     * @return A new copy of the current document.
+     */
     XmlDocument copy();
 
-    AccessMode getModifyMode();
+    /**
+     * Get the access mode of this document.
+     * @return The access mode of this document.
+     */
+    AccessMode getAccessMode();
 
 }
