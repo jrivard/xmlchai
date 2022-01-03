@@ -43,4 +43,7 @@
     <allow pkg="org.w3c"/>
     <allow pkg="org.xml"/>
 
+    <!-- findbugs annotations -->
+    <allow pkg="edu.umd.cs.findbugs.annotations"/>
+
 </import-control>

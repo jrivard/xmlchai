@@ -19,9 +19,11 @@
 
 package org.jrivard.xmlchai;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -66,20 +68,22 @@ class XmlFactoryW3c implements XmlFactory
     }
 
     @Override
+    @SuppressFBWarnings( value = "XXE_DOCUMENT", justification = "suppressing XXE warning as appropriate builder features are set in getBuilder() method" )
     public XmlDocument parse( final InputStream inputStream, final AccessMode accessMode )
             throws IOException
     {
-        final org.w3c.dom.Document inputDocument;
         try
         {
             final DocumentBuilder builder = getBuilder();
-            inputDocument = builder.parse( inputStream );
+
+
+            final org.w3c.dom.Document inputDocument = builder.parse( inputStream );
+            return new XmlDocumentW3c( this, inputDocument, accessMode );
         }
         catch ( final Exception e )
         {
             throw new IOException( "error parsing xml data: " + e.getMessage() );
         }
-        return new XmlDocumentW3c( this, inputDocument, accessMode );
     }
 
     @Override
@@ -100,6 +104,7 @@ class XmlFactoryW3c implements XmlFactory
         try
         {
             final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dbFactory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
             dbFactory.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", false );
             dbFactory.setExpandEntityReferences( false );
             dbFactory.setValidating( false );
@@ -126,12 +131,17 @@ class XmlFactoryW3c implements XmlFactory
         lock.lock();
         try
         {
-            final Transformer tr = TransformerFactory.newInstance().newTransformer();
-            tr.setOutputProperty( OutputKeys.INDENT, compact ? "no" : "yes" );
-            tr.setOutputProperty( OutputKeys.METHOD, "xml" );
-            tr.setOutputProperty( OutputKeys.ENCODING, XML_STRING_CHARSET.toString() );
+            final TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+            factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+            factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "" );
 
-            tr.transform( new DOMSource( ( ( XmlDocumentW3c ) document ).getW3cDocument() ), new StreamResult( outputStream ) );
+            final Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty( OutputKeys.INDENT, compact ? "no" : "yes" );
+            transformer.setOutputProperty( OutputKeys.METHOD, "xml" );
+            transformer.setOutputProperty( OutputKeys.ENCODING, XML_STRING_CHARSET.toString() );
+
+            transformer.transform( new DOMSource( ( ( XmlDocumentW3c ) document ).getW3cDocument() ), new StreamResult( outputStream ) );
         }
         catch ( final TransformerException e )
         {

@@ -19,6 +19,7 @@
 
 package org.jrivard.xmlchai;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -100,6 +101,7 @@ class XmlDocumentW3c implements XmlDocument
     }
 
     @Override
+    @SuppressFBWarnings( value = "XPATH_INJECTION", justification = "xpath injection is controlled by client" )
     public Optional<XmlElement> evaluateXpathToElement(
             final String xpathExpression
     )
@@ -113,6 +115,7 @@ class XmlDocumentW3c implements XmlDocument
     }
 
     @Override
+    @SuppressFBWarnings( value = "XPATH_INJECTION", justification = "xpath injection is controlled by client" )
     public List<XmlElement> evaluateXpathToElements(
             final String xpathExpression
     )

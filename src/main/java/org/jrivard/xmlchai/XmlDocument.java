@@ -36,6 +36,9 @@ public interface XmlDocument
 
     /**
      * Execute the xpath query and return the first matching element, if any.
+     *
+     * <p>CAUTION: It is the client's responsibility to ensure the XPath expression
+     * is protected from untrusted data injection.</p>
      * @param xpathExpression A valid xpath expression.
      * @return Return the first matching element, if any.
      * @throws NullPointerException if the {@code xpathExpression} is null.
@@ -44,6 +47,9 @@ public interface XmlDocument
 
     /**
      * Execute the xpath query and return all the matching elements, if any.
+     *
+     * <p>CAUTION: It is the client's responsibility to ensure the XPath expression
+     * is protected from untrusted data injection.</p>
      * @param xpathExpression A valid xpath expression.
      * @return Return all the matching elements, if any.
      * @throws NullPointerException if the {@code xpathExpression} is null.
