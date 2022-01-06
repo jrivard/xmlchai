@@ -32,11 +32,11 @@
 
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
 
         <!-- used by javadoc plugin -->
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <version>4.5.2</version>
+            <version>4.5.3</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -81,8 +81,30 @@
             </resource>
         </resources>
 
-        <!--reads the git commit info -->
         <plugins>
+
+            <!-- limit API usage to Java 8 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <version>1.20</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <signature>
+                        <groupId>org.codehaus.mojo.signature</groupId>
+                        <artifactId>java18</artifactId>
+                        <version>1.0</version>
+                    </signature>
+                </configuration>
+            </plugin>
+
+            <!--reads the git commit info -->
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -116,12 +138,12 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.5.2.0</version>
+                <version>4.5.3.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.5.2</version>
+                        <version>4.5.3</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -144,6 +166,18 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -185,6 +219,7 @@
                         <configuration>
                             <propertyExpansion>basedir=${basedir}</propertyExpansion>
                             <configLocation>build/checkstyle.xml</configLocation>
+                            <excludes>**/module-info.java</excludes>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
@@ -336,7 +371,7 @@
             <plugin> <!-- checks owsp vulnerability database -->
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>6.5.1</version>
+                <version>6.5.2</version>
                 <executions>
                     <execution>
                         <goals>
