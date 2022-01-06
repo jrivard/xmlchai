@@ -368,6 +368,35 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>sign</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skip>${jarsigner.skip}</skip>
+                    <keystore>${jarsigner.keystore}</keystore>
+                    <alias>${jarsigner.alias}</alias>
+                    <storepass>${jarsigner.storepass}</storepass>
+                    <keypass>${jarsigner.keypass}</keypass>
+                    <verbose>false</verbose>
+                    <removeExistingSignatures>true</removeExistingSignatures>
+                    <includes>
+                        <include>*.jar</include>
+                        <include>*.war</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
             <plugin> <!-- checks owsp vulnerability database -->
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
@@ -411,6 +440,12 @@
             <id>skip-spotbugs</id>
             <properties>
                 <skipSpotbugs>true</skipSpotbugs>
+            </properties>
+        </profile>
+        <profile>
+            <id>enable-jarsigner</id>
+            <properties>
+                <jarsigner.skip>false</jarsigner.skip>
             </properties>
         </profile>
         <profile>
