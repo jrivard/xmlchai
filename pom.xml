@@ -46,11 +46,66 @@
         <skipJavadoc>false</skipJavadoc>
         <skipSpotbugs>false</skipSpotbugs>
         <checkstyle.skip>false</checkstyle.skip>
+        <jarsigner.skip>true</jarsigner.skip>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
 
         <!-- git.commit.time is populated via git-commit-id-plugin and results in a (hopefully) reproducible maven build -->
         <project.build.outputTimestamp>${git.commit.time}</project.build.outputTimestamp>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>skip-checkstyle</id>
+            <properties>
+                <checkstyle.skip>true</checkstyle.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-javadoc</id>
+            <properties>
+                <skipJavadoc>true</skipJavadoc>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-tests</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-spotbugs</id>
+            <properties>
+                <skipSpotbugs>true</skipSpotbugs>
+            </properties>
+        </profile>
+        <profile>
+            <id>enable-jarsigner</id>
+            <properties>
+                <jarsigner.skip>false</jarsigner.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- Test dependencies -->
@@ -411,6 +466,24 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-descriptor</id>
+                        <goals>
+                            <goal>attach-descriptor</goal>
+                        </goals>
+                        <configuration>
+                            <!-- deploying using github site -->
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -419,59 +492,7 @@
         </plugins>
     </reporting>
 
-    <profiles>
-        <profile>
-            <id>skip-checkstyle</id>
-            <properties>
-                <checkstyle.skip>true</checkstyle.skip>
-            </properties>
-        </profile>
-        <profile>
-            <id>skip-javadoc</id>
-            <properties>
-                <skipJavadoc>true</skipJavadoc>
-            </properties>
-        </profile>
-        <profile>
-            <id>skip-tests</id>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
-        </profile>
-        <profile>
-            <id>skip-spotbugs</id>
-            <properties>
-                <skipSpotbugs>true</skipSpotbugs>
-            </properties>
-        </profile>
-        <profile>
-            <id>enable-jarsigner</id>
-            <properties>
-                <jarsigner.skip>false</jarsigner.skip>
-            </properties>
-        </profile>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+
 
     <distributionManagement>
         <snapshotRepository>
