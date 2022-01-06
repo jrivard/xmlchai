@@ -6,6 +6,8 @@
     <artifactId>xmlchai</artifactId>
     <packaging>jar</packaging>
 
+    <url>https://github.com/jrivard/xmlchai</url>
+
     <name>XML Chai Library</name>
 
     <scm>
