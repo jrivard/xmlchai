@@ -2,6 +2,8 @@
 XML Chai is a wrapper for Java's built-in w3c XML Library with simplified and modern API.  The Java 
 w3c API predates modern APIs (like Optional) and styles (immutability), and is not thread-safe.
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jrivard.xmlchai/xmlchai/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.jrivard.xmlchai/xmlchai/)
+
 [![javadoc](https://javadoc.io/badge2/org.jrivard.xmlchai/xmlchai/javadoc.svg)](https://javadoc.io/doc/org.jrivard.xmlchai/xmlchai)
 
 XML Chai API has the following features:
