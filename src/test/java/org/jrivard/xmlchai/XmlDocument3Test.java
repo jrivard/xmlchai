@@ -1,6 +1,6 @@
 /*
  * XML Chai Library
- * Copyright (c) 2021 Jason D. Rivard
+ * Copyright (c) 2021-2023 Jason D. Rivard
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
