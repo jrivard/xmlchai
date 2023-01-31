@@ -25,10 +25,14 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -101,42 +105,59 @@ class XmlDocumentW3c implements XmlDocument
     }
 
     @Override
-    @SuppressFBWarnings( value = "XPATH_INJECTION", justification = "xpath injection is controlled by client" )
+    @SuppressFBWarnings( "XPATH_INJECTION" )
     public Optional<XmlElement> evaluateXpathToElement(
             final String xpathExpression
     )
     {
         final List<XmlElement> elements = evaluateXpathToElements( xpathExpression );
+
         if ( elements == null || elements.isEmpty() )
         {
             return Optional.empty();
         }
-        return Optional.of( elements.iterator().next() );
+
+        return Optional.of( elements.get( 0 ) );
     }
 
     @Override
-    @SuppressFBWarnings( value = "XPATH_INJECTION", justification = "xpath injection is controlled by client" )
+    @SuppressFBWarnings( value = { "EXS_EXCEPTION_SOFTENING_NO_CHECKED" } )
     public List<XmlElement> evaluateXpathToElements(
             final String xpathExpression
+    )
+    {
+        return evaluateXpathToElements( xpathExpression, Collections.emptyList() );
+    }
+
+    @Override
+    @SuppressFBWarnings( value = { "XPATH_INJECTION", "EXS_EXCEPTION_SOFTENING_NO_CHECKED" } )
+    public List<XmlElement> evaluateXpathToElements(
+            final String xpathExpression,
+            final List<String> values
     )
     {
         getLock().lock();
         try
         {
-            final XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
-            final javax.xml.xpath.XPathExpression expression = xPath.compile( xpathExpression );
+            final XPathVariableInjector xPathVariableInjector = new XPathVariableInjector( values );
+
+            final XPathExpression expression = xPathVariableInjector.getXPath().compile( xpathExpression );
             final NodeList nodeList = ( NodeList ) expression.evaluate( document, XPathConstants.NODESET );
+
+            xPathVariableInjector.throwIfParamsUnused();
+
             return XmlFactoryW3c.nodeListToElementList( nodeList, this );
         }
         catch ( final XPathExpressionException e )
         {
-            throw new IllegalStateException( "error evaluating xpath expression: " + e.getMessage() );
+            throw new IllegalStateException( "error evaluating xpath expression: " + e.getMessage(), e );
         }
         finally
         {
             getLock().unlock();
         }
     }
+
 
     @Override
     public XmlDocument copy()
@@ -150,6 +171,62 @@ class XmlDocumentW3c implements XmlDocument
         finally
         {
             getLock().unlock();
+        }
+    }
+
+    /**
+     * Internal helper to inject variables into xpath expressions.
+     */
+    private static class XPathVariableInjector
+    {
+        /** A result set of used variables.  */
+        private final Set<Integer> usedParams = new HashSet<>();
+
+        /** XPath object to be used by the base class. */
+        private final XPath xpath;
+
+        /** Count of user supplied parameters. */
+        private final int paramCount;
+
+        XPathVariableInjector( final List<String> suppliedParams )
+        {
+            final XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+
+            if ( suppliedParams != null && !suppliedParams.isEmpty() )
+            {
+                xPath.setXPathVariableResolver( variableName ->
+                {
+                    for ( int i = 0; i < suppliedParams.size(); i++ )
+                    {
+                        if ( variableName.getLocalPart().equals( String.valueOf( i ) ) )
+                        {
+                            usedParams.add( i );
+                            return suppliedParams.get( i );
+                        }
+                    }
+                    return null;
+                } );
+            }
+
+            this.paramCount = suppliedParams == null ? 0 : suppliedParams.size();
+            this.xpath = xPath;
+        }
+
+        public XPath getXPath()
+        {
+            return xpath;
+        }
+
+        public void throwIfParamsUnused()
+        {
+            for ( int i = 0; i < paramCount; i++ )
+            {
+                if ( !usedParams.contains( i ) )
+                {
+                    throw new IllegalArgumentException( "xpath expression did not utilize variable $" + i
+                            + " for which a parameter value was included"  );
+                }
+            }
         }
     }
 }

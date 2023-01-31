@@ -46,12 +46,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 
+@SuppressFBWarnings( "FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" )
+// FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY is incorrectly detected on this class
 class XmlFactoryW3c implements XmlFactory
 {
     /**
      * Singleton for the standard W3C XmlFactory.
      */
-    private static final XmlFactory W3C_FACTORY = new XmlFactoryW3c();
+    private static final XmlFactoryW3c W3C_FACTORY = new XmlFactoryW3c();
 
     /**
      * Character set used the ChaiLibrary for parsing/outputting strings.
@@ -62,27 +64,26 @@ class XmlFactoryW3c implements XmlFactory
     {
     }
 
-    static XmlFactory getW3cFactory()
+    static XmlFactoryW3c getW3cFactory()
     {
         return W3C_FACTORY;
     }
 
     @Override
-    @SuppressFBWarnings( value = "XXE_DOCUMENT", justification = "suppressing XXE warning as appropriate builder features are set in getBuilder() method" )
+    @SuppressFBWarnings( value = "XXE_DOCUMENT" )
+    // XXE_DOCUMENT suppressing XXE warning as appropriate builder features are set in getBuilder() method
     public XmlDocument parse( final InputStream inputStream, final AccessMode accessMode )
             throws IOException
     {
         try
         {
             final DocumentBuilder builder = getBuilder();
-
-
             final org.w3c.dom.Document inputDocument = builder.parse( inputStream );
             return new XmlDocumentW3c( this, inputDocument, accessMode );
         }
         catch ( final Exception e )
         {
-            throw new IOException( "error parsing xml data: " + e.getMessage() );
+            throw new IOException( "error parsing xml data: " + e.getMessage(), e );
         }
     }
 
@@ -99,14 +100,14 @@ class XmlFactoryW3c implements XmlFactory
         }
     }
 
+    @SuppressFBWarnings( "EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" )
     static DocumentBuilder getBuilder()
     {
         try
         {
             final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
-            dbFactory.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", false );
-            dbFactory.setExpandEntityReferences( false );
+            dbFactory.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
             dbFactory.setValidating( false );
             dbFactory.setXIncludeAware( false );
             dbFactory.setExpandEntityReferences( false );
@@ -114,7 +115,7 @@ class XmlFactoryW3c implements XmlFactory
         }
         catch ( final ParserConfigurationException e )
         {
-            throw new IllegalArgumentException( "unable to generate dom xml builder: " + e.getMessage() );
+            throw new IllegalArgumentException( "unable to generate dom xml builder: " + e.getMessage(), e );
         }
     }
 
@@ -145,7 +146,7 @@ class XmlFactoryW3c implements XmlFactory
         }
         catch ( final TransformerException e )
         {
-            throw new IOException( "error loading xml transformer: " + e.getMessage() );
+            throw new IOException( "error loading xml transformer: " + e.getMessage(), e );
         }
         finally
         {

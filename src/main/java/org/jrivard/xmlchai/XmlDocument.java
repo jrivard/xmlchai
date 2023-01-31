@@ -57,6 +57,29 @@ public interface XmlDocument
     List<XmlElement> evaluateXpathToElements( String xpathExpression );
 
     /**
+     * Execute the xpath query and return all the matching elements, if any.
+     *
+     * <p>A parameter escape-safe xpath evaluator and operator.  Clients can
+     * pass parameters as a strings.</p>
+     *
+     * <h2>Example:</h2>
+     * xPathExpression = {@code //PLANT[ZONE[text()=$0]]}<br/>
+     * values = {@code List.of("Annual")}<br/>
+     * <br/>
+     * <h2>Result:</h2>
+     * {@code //PLANT[ZONE[text()="Annual"]]}<br/>
+     *
+     * @param xpathExpression A valid xpath with variable substitutions in the form of $0, $1, $2, etc...
+     * @param values Sequenced list of values, to be used as variable value substitutions.  The
+     *               count of values MUST match the number of variable substituions used.
+     * @return Return all the matching elements, if any.
+     * @throws NullPointerException if the {@code xpathExpression} is null.
+     */
+    List<XmlElement> evaluateXpathToElements(
+            String xpathExpression,
+            List<String> values );
+
+    /**
      * Make a copy of the entire document.  The {@code AccessMode} of the copied
      * document will be {@link AccessMode#MUTABLE}.
      * @return A new copy of the current document.

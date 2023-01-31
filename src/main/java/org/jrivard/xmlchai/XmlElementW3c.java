@@ -19,6 +19,7 @@
 
 package org.jrivard.xmlchai;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -51,6 +52,7 @@ class XmlElementW3c implements XmlElement
      */
     private Lock localLock;
 
+    @SuppressFBWarnings( "FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" )
     XmlElementW3c( final org.w3c.dom.Element element, final XmlDocumentW3c xmlDocument )
     {
         this.element = Objects.requireNonNull( element );
@@ -103,7 +105,7 @@ class XmlElementW3c implements XmlElement
         {
             return Optional.empty();
         }
-        return Optional.of( children.iterator().next() );
+        return Optional.of( children.get( 0 ) );
     }
 
     @Override
