@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Represents a mutable Document containing an {@link XmlElement} reference.  <code>XmlDocument</code> instances
+ * Represents the parsed XML Document.  <code>XmlDocument</code> instances
  * are thread-safe.
  */
 public interface XmlDocument
@@ -36,12 +36,13 @@ public interface XmlDocument
 
     /**
      * Execute the xpath query and return the first matching element, if any.
-     *
+     *813262
      * <p>CAUTION: It is the client's responsibility to ensure the XPath expression
-     * is protected from untrusted data injection.</p>
+     * is protected from untrusted data injection.  For cases with </p>
      * @param xpathExpression A valid xpath expression.
      * @return Return the first matching element, if any.
      * @throws NullPointerException if the {@code xpathExpression} is null.
+     * @throws IllegalArgumentException if the {@code xpathExpression} in invalid.
      */
     Optional<XmlElement> evaluateXpathToElement( String xpathExpression );
 
@@ -53,6 +54,7 @@ public interface XmlDocument
      * @param xpathExpression A valid xpath expression.
      * @return Return all the matching elements, if any.
      * @throws NullPointerException if the {@code xpathExpression} is null.
+     * @throws IllegalArgumentException if the {@code xpathExpression} in invalid.
      */
     List<XmlElement> evaluateXpathToElements( String xpathExpression );
 
@@ -62,18 +64,23 @@ public interface XmlDocument
      * <p>A parameter escape-safe xpath evaluator and operator.  Clients can
      * pass parameters as a strings.</p>
      *
-     * <h2>Example:</h2>
-     * xPathExpression = {@code //PLANT[ZONE[text()=$0]]}<br/>
-     * values = {@code List.of("Annual")}<br/>
-     * <br/>
-     * <h2>Result:</h2>
-     * {@code //PLANT[ZONE[text()="Annual"]]}<br/>
+     * <p><b>Example:</b></p>
+     * <pre>
+     * {@code var xPathExpression = "/PLANT[ZONE[text()=$0]]";}
+     * {@code var values = List.of("Annual");}
+     * </pre>
+     *
+     * <p><b>Result:</b></p>
+     * <pre>
+     * {@code /PLANT[ZONE[text()="Annual"]]}
+     * </pre>
      *
      * @param xpathExpression A valid xpath with variable substitutions in the form of $0, $1, $2, etc...
      * @param values Sequenced list of values, to be used as variable value substitutions.  The
      *               count of values MUST match the number of variable substituions used.
      * @return Return all the matching elements, if any.
      * @throws NullPointerException if the {@code xpathExpression} is null.
+     * @throws IllegalArgumentException if the {@code xpathExpression} in invalid.
      */
     List<XmlElement> evaluateXpathToElements(
             String xpathExpression,

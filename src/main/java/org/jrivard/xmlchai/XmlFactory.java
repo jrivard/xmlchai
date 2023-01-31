@@ -99,4 +99,13 @@ public interface XmlFactory
      * @throws NullPointerException if {@code elementName} is null.
      */
     XmlElement newElement( String elementName );
+
+    /**
+     * Fetch an instance of {@link XmlFactory}.
+     * @return an instance of {@link XmlFactory}
+     */
+    static XmlFactory getFactory()
+    {
+        return XmlFactoryW3c.getW3cFactory();
+    }
 }

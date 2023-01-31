@@ -20,7 +20,7 @@
 package org.jrivard.xmlchai;
 
 /**
- * Base class for access to XML Chai API.
+ * Base class for access to XML Chai API, primary used to obtain instances of {@link org.jrivard.xmlchai.XmlFactory}.
  */
 public class XmlChai
 {

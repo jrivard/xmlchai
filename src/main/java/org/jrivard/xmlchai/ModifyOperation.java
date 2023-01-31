@@ -23,9 +23,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * The presence of the {@link ModifyOperation} annotation on a method indicates the method will mutate the XML object.  If the XML
- * object is part of an {@link XmlDocument} that is set to {@link AccessMode#IMMUTABLE}, any call to that method will result in an
- * {@link UnsupportedOperationException}.
+ * Method annotation indicating if a method will mutate data.  If the XML
+ * data is part of an {@link XmlDocument} that is set to {@link AccessMode#IMMUTABLE},
+ * any call to that method will result in an {@link UnsupportedOperationException}.
  */
 @Target( ElementType.METHOD )
 public @interface ModifyOperation

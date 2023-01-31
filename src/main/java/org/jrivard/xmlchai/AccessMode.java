@@ -20,7 +20,7 @@
 package org.jrivard.xmlchai;
 
 /**
- * Control access mode to {@link XmlDocument} instances.
+ * Mutable/Immutable access mode for {@link XmlDocument} and related instances.
  */
 public enum AccessMode
 {
