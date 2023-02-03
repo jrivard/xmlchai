@@ -20,6 +20,7 @@
 package org.jrivard.xmlchai;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -62,7 +63,7 @@ public interface XmlDocument
      * Execute the xpath query and return all the matching elements, if any.
      *
      * <p>A parameter escape-safe xpath evaluator and operator.  Clients can
-     * pass parameters as a strings.</p>
+     * pass parameters as xpath variables.</p>
      *
      * <p><b>Example:</b></p>
      * <pre>
@@ -77,7 +78,7 @@ public interface XmlDocument
      *
      * @param xpathExpression A valid xpath with variable substitutions in the form of $0, $1, $2, etc...
      * @param values Sequenced list of values, to be used as variable value substitutions.  The
-     *               count of values MUST match the number of variable substituions used.
+     *               count of values MUST match the number of variable substitutions used.
      * @return Return all the matching elements, if any.
      * @throws NullPointerException if the {@code xpathExpression} is null.
      * @throws IllegalArgumentException if the {@code xpathExpression} in invalid.
@@ -85,6 +86,35 @@ public interface XmlDocument
     List<XmlElement> evaluateXpathToElements(
             String xpathExpression,
             List<String> values );
+
+    /**
+     * Execute the xpath query and return all the matching elements, if any.
+     *
+     * <p>A parameter escape-safe xpath evaluator and operator.  Clients can
+     * pass parameters as xpath variables.</p>
+     *
+     * <p><b>Example:</b></p>
+     * <pre>
+     * {@code var xPathExpression = "/PLANT[ZONE[text()=$key]]";}
+     * {@code var values = Map.of("key","Annual");}
+     * </pre>
+     *
+     * <p><b>Result:</b></p>
+     * <pre>
+     * {@code /PLANT[ZONE[text()="Annual"]]}
+     * </pre>
+     *
+     * @param xpathExpression A valid xpath with variable substitutions in the form of $0, $1, $2, etc...
+     * @param values Map of key/values to be used as variable value substitutions.  If all keys are not used
+     *               in the expression, an exception will be thrown.
+     * @return Return all the matching elements, if any.
+     * @throws NullPointerException if the {@code xpathExpression} is null.
+     * @throws IllegalArgumentException if the {@code xpathExpression} in invalid.
+     */
+    List<XmlElement> evaluateXpathToElements(
+            String xpathExpression,
+            Map<String, String> values );
+
 
     /**
      * Make a copy of the entire document.  The {@code AccessMode} of the copied

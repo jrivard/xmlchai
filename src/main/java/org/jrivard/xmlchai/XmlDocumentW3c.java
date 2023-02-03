@@ -28,8 +28,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -136,6 +138,25 @@ class XmlDocumentW3c implements XmlDocument
             final List<String> values
     )
     {
+        final Map<String, String> map = new HashMap<>();
+        if ( values != null )
+        {
+            for ( int i = 0; i < values.size(); i++ )
+            {
+                final String key = String.valueOf( i );
+                map.put( key, values.get( i ) );
+            }
+        }
+        return evaluateXpathToElements( xpathExpression, map );
+    }
+
+    @Override
+    @SuppressFBWarnings( value = { "XPATH_INJECTION", "EXS_EXCEPTION_SOFTENING_NO_CHECKED" } )
+    public List<XmlElement> evaluateXpathToElements(
+            final String xpathExpression,
+            final Map<String, String> values
+    )
+    {
         getLock().lock();
         try
         {
@@ -180,36 +201,29 @@ class XmlDocumentW3c implements XmlDocument
     private static class XPathVariableInjector
     {
         /** A result set of used variables.  */
-        private final Set<Integer> usedParams = new HashSet<>();
+        private final Set<String> unusedKeys = new HashSet<>();
 
         /** XPath object to be used by the base class. */
         private final XPath xpath;
 
-        /** Count of user supplied parameters. */
-        private final int paramCount;
-
-        XPathVariableInjector( final List<String> suppliedParams )
+        XPathVariableInjector( final Map<String, String> suppliedParams )
         {
-            final XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+            xpath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
 
-            if ( suppliedParams != null && !suppliedParams.isEmpty() )
+            final Map<String, String> copiedParams = new HashMap<>( suppliedParams == null ? Collections.emptyMap() : suppliedParams );
+
+            unusedKeys.addAll( copiedParams.keySet() );
+
+            xpath.setXPathVariableResolver( variableName ->
             {
-                xPath.setXPathVariableResolver( variableName ->
+                final String key = variableName.getLocalPart();
+                final String value = copiedParams.get( key );
+                if ( value != null )
                 {
-                    for ( int i = 0; i < suppliedParams.size(); i++ )
-                    {
-                        if ( variableName.getLocalPart().equals( String.valueOf( i ) ) )
-                        {
-                            usedParams.add( i );
-                            return suppliedParams.get( i );
-                        }
-                    }
-                    return null;
-                } );
-            }
-
-            this.paramCount = suppliedParams == null ? 0 : suppliedParams.size();
-            this.xpath = xPath;
+                    unusedKeys.remove( key );
+                }
+                return value;
+            } );
         }
 
         public XPath getXPath()
@@ -219,13 +233,12 @@ class XmlDocumentW3c implements XmlDocument
 
         public void throwIfParamsUnused()
         {
-            for ( int i = 0; i < paramCount; i++ )
+            if ( !unusedKeys.isEmpty() )
             {
-                if ( !usedParams.contains( i ) )
-                {
-                    throw new IllegalArgumentException( "xpath expression did not utilize variable $" + i
-                            + " for which a parameter value was included"  );
-                }
+                final String key = unusedKeys.iterator().next();
+                throw new IllegalArgumentException( "xpath expression did not utilize variable $"
+                        + key
+                        + " for which a parameter value was included"  );
             }
         }
     }
