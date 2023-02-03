@@ -356,7 +356,7 @@
                             <skip>${skipJavadoc}</skip>
                             <failOnError>true</failOnError>
                             <failOnWarnings>true</failOnWarnings>
-                            <show>public</show>
+                            <show>protected</show>
                             <finalName>${project.artifactId}-${project.version}</finalName>
                             <outputDirectory>${project.build.directory}/javadoc</outputDirectory>
                             <quiet>true</quiet>

@@ -27,7 +27,7 @@ public class XmlElementTest
     @Test
     public void testSetText()
     {
-        final XmlElement xmlElement = XmlChai.getFactory().newElement( "TEST" );
+        final XmlElement xmlElement = XmlFactory.getFactory().newElement( "TEST" );
         Assertions.assertFalse( xmlElement.getText().isPresent() );
 
         xmlElement.setText( "text1" );
@@ -42,7 +42,7 @@ public class XmlElementTest
     @Test
     public void testRemoveText()
     {
-        final XmlElement xmlElement = XmlChai.getFactory().newElement( "TEST" );
+        final XmlElement xmlElement = XmlFactory.getFactory().newElement( "TEST" );
         Assertions.assertFalse( xmlElement.getText().isPresent() );
 
         xmlElement.setText( "text1" );
@@ -57,11 +57,39 @@ public class XmlElementTest
     @Test
     public void testGetParent()
     {
-        final XmlElement xmlElement = XmlChai.getFactory().newElement( "TEST" );
+        final XmlElement xmlElement = XmlFactory.getFactory().newElement( "TEST" );
         Assertions.assertFalse( xmlElement.parent().isPresent() );
 
-        final XmlElement childXmlElement = XmlChai.getFactory().newElement( "TEST-CHILD" );
+        final XmlElement childXmlElement = XmlFactory.getFactory().newElement( "TEST-CHILD" );
         xmlElement.attachElement( childXmlElement );
         Assertions.assertTrue( childXmlElement.parent().isPresent() );
+    }
+
+    @Test
+    public void testRemoveAttributes()
+    {
+        final XmlElement xmlElement = XmlFactory.getFactory().newElement( "TEST" );
+        xmlElement.setAttribute( "a", "1" );
+        xmlElement.setAttribute( "b", "2" );
+        xmlElement.setAttribute( "c", "3" );
+
+        Assertions.assertEquals( 3, xmlElement.getAttributeNames().size() );
+
+        xmlElement.removeAttributes();
+        Assertions.assertEquals( 0, xmlElement.getAttributeNames().size() );
+    }
+
+    @Test
+    public void testRemoveChildren()
+    {
+        final XmlElement xmlElement = XmlFactory.getFactory().newElement( "TEST" );
+        xmlElement.newChildElement( "a" );
+        xmlElement.newChildElement( "b" );
+        xmlElement.newChildElement( "c" );
+
+        Assertions.assertEquals( 3, xmlElement.getChildren().size() );
+
+        xmlElement.removeChildren();
+        Assertions.assertEquals( 0, xmlElement.getChildren().size() );
     }
 }

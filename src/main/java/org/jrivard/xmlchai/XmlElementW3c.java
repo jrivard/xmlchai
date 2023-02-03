@@ -288,6 +288,48 @@ class XmlElementW3c implements XmlElement
     }
 
     @Override
+    public void removeChildren( final String elementName )
+    {
+        modificationCheck();
+
+        final Lock lock = getLock();
+        lock.lock();
+        try
+        {
+            final NodeList nodeList = element.getElementsByTagName( elementName );
+            for ( final XmlElement child : XmlFactoryW3c.nodeListToElementList( nodeList, xmlDocument ) )
+            {
+                element.removeChild( ( ( XmlElementW3c ) child ).element );
+                ( ( XmlElementW3c ) child ).xmlDocument = null;
+            }
+        }
+        finally
+        {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void removeAttributes()
+    {
+        modificationCheck();
+        final Lock lock = getLock();
+        lock.lock();
+        try
+        {
+            while ( element.getAttributes().getLength() > 0 )
+            {
+                final Node attribute = element.getAttributes().item( 0 );
+                element.getAttributes().removeNamedItem( attribute.getNodeName() );
+            }
+        }
+        finally
+        {
+            lock.unlock();
+        }
+    }
+
+    @Override
     public void removeAttribute( final String attributeName )
     {
         Objects.requireNonNull( attributeName );

@@ -28,6 +28,6 @@ import java.lang.annotation.Target;
  * any call to that method will result in an {@link UnsupportedOperationException}.
  */
 @Target( ElementType.METHOD )
-public @interface ModifyOperation
+@interface ModifyOperation
 {
 }

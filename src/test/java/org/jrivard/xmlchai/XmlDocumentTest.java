@@ -30,7 +30,7 @@ public class XmlDocumentTest
     private XmlDocument readXmlDocument() throws IOException
     {
         final InputStream xmlFactoryTestXmlFile = this.getClass().getResourceAsStream( "plant_catalog.xml" );
-        return XmlChai.getFactory().parse( xmlFactoryTestXmlFile, AccessMode.IMMUTABLE );
+        return XmlFactory.getFactory().parse( xmlFactoryTestXmlFile, AccessMode.IMMUTABLE );
     }
 
     @Test

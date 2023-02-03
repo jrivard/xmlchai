@@ -24,7 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Factory for creating new XML objects.  Use {@link XmlChai#getFactory()} to obtain an instance.
+ * Factory for creating new XML object instances, including the {@code XmlFactory} itself.
+ * Use {@link #getFactory()} to obtain an instance.
  */
 public interface XmlFactory
 {
@@ -101,7 +102,7 @@ public interface XmlFactory
     XmlElement newElement( String elementName );
 
     /**
-     * Fetch an instance of {@link XmlFactory}.
+     * Get an instance of {@link XmlFactory}.
      * @return an instance of {@link XmlFactory}
      */
     static XmlFactory getFactory()

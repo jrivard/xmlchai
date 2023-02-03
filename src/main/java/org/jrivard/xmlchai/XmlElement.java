@@ -104,6 +104,23 @@ public interface XmlElement
     void removeChildren();
 
     /**
+     * Detach all the direct child elements, if any, with the specified elementName from this element.
+     * If those elements are not otherwise referenced by a client they will become unreachable.
+     * @param elementName name of the element(s) to remove..
+     * @throws UnsupportedOperationException if the parent {@link XmlDocument}'s {@code AccessMode} is set to {@link AccessMode#IMMUTABLE}.
+     */
+    @ModifyOperation
+    void removeChildren( String elementName );
+
+    /**
+     * Remove all attribute values,if any on current element.
+     * @throws NullPointerException if {@code attributeName} is null.
+     * @throws UnsupportedOperationException if the parent {@link XmlDocument}'s {@code AccessMode} is set to {@link AccessMode#IMMUTABLE}.
+     */
+    @ModifyOperation
+    void removeAttributes();
+
+    /**
      * Remove the attribute value on current element.
      * @param attributeName name of the attribute.
      * @throws NullPointerException if {@code attributeName} is null.
