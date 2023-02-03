@@ -179,9 +179,6 @@
                     <failOnNoGitDirectory>false</failOnNoGitDirectory>
                     <dateFormat>yyyy-MM-dd'T'HH:mm:ss'Z'</dateFormat>
                     <dateFormatTimeZone>Zulu</dateFormatTimeZone>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/classes/git.json</generateGitPropertiesFilename>
-                    <format>json</format>
                     <gitDescribe>
                         <tags>true</tags>
                     </gitDescribe>
@@ -309,12 +306,9 @@
                     <execution>
                         <id>default-jar</id>
                         <configuration>
-                            <!-- Exclude NMAS stubs, since we want to use the ones from NMASToolkit.jar, if available -->
-                            <excludes>
-                                <exclude>com/novell/security/</exclude>
-                            </excludes>
                             <archive>
                                 <manifest>
+                                    <addDefaultEntries>false</addDefaultEntries>
                                     <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
                                 </manifest>
                                 <manifestEntries>
@@ -323,12 +317,14 @@
                                     <Implementation-Version>${project.version}</Implementation-Version>
                                     <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
                                     <Implementation-URL>${project.organization.url}</Implementation-URL>
-                                    <Implementation-Build-Java-Spec-Version>${java.specification.version}</Implementation-Build-Java-Spec-Version>
+                                    <Implementation-Build-Java-Version>${maven.compiler.target}</Implementation-Build-Java-Version>
+                                    <SCM-Git-Branch>${git.branch}</SCM-Git-Branch>
                                     <SCM-Git-Commit-ID>${git.commit.id}</SCM-Git-Commit-ID>
                                     <SCM-Git-Commit-ID-Abbrev>${git.commit.id.abbrev}</SCM-Git-Commit-ID-Abbrev>
                                     <SCM-Git-Commit-ID-Description>${git.commit.id.describe}</SCM-Git-Commit-ID-Description>
                                     <SCM-Git-Commit-Timestamp>${git.commit.time}</SCM-Git-Commit-Timestamp>
                                     <SCM-Git-Commit-Dirty>${git.dirty}</SCM-Git-Commit-Dirty>
+                                    <SCM-Git-Remote-Origin-URL>${git.remote.origin.url}</SCM-Git-Remote-Origin-URL>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -366,20 +362,23 @@
                             <quiet>true</quiet>
                             <archive>
                                 <manifest>
+                                    <addDefaultEntries>false</addDefaultEntries>
                                     <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
                                 </manifest>
                                 <manifestEntries>
-                                    <Archive-Type>javadoc</Archive-Type>
+                                    <Archive-Type>jar</Archive-Type>
                                     <Implementation-Title>${project.name}</Implementation-Title>
                                     <Implementation-Version>${project.version}</Implementation-Version>
                                     <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
                                     <Implementation-URL>${project.organization.url}</Implementation-URL>
-                                    <Implementation-Build-Java-Spec-Version>${java.specification.version}</Implementation-Build-Java-Spec-Version>
+                                    <Implementation-Build-Java-Version>${maven.compiler.target}</Implementation-Build-Java-Version>
+                                    <SCM-Git-Branch>${git.branch}</SCM-Git-Branch>
                                     <SCM-Git-Commit-ID>${git.commit.id}</SCM-Git-Commit-ID>
                                     <SCM-Git-Commit-ID-Abbrev>${git.commit.id.abbrev}</SCM-Git-Commit-ID-Abbrev>
                                     <SCM-Git-Commit-ID-Description>${git.commit.id.describe}</SCM-Git-Commit-ID-Description>
                                     <SCM-Git-Commit-Timestamp>${git.commit.time}</SCM-Git-Commit-Timestamp>
-                                    <SCM-Git-Commit-Dirty>${git.commit.dirty}</SCM-Git-Commit-Dirty>
+                                    <SCM-Git-Commit-Dirty>${git.dirty}</SCM-Git-Commit-Dirty>
+                                    <SCM-Git-Remote-Origin-URL>${git.remote.origin.url}</SCM-Git-Remote-Origin-URL>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -410,20 +409,23 @@
                         <configuration>
                             <archive>
                                 <manifest>
+                                    <addDefaultEntries>false</addDefaultEntries>
                                     <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
                                 </manifest>
                                 <manifestEntries>
-                                    <Archive-Type>source</Archive-Type>
+                                    <Archive-Type>jar</Archive-Type>
                                     <Implementation-Title>${project.name}</Implementation-Title>
                                     <Implementation-Version>${project.version}</Implementation-Version>
                                     <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
                                     <Implementation-URL>${project.organization.url}</Implementation-URL>
-                                    <Implementation-Build-Java-Spec-Version>${java.specification.version}</Implementation-Build-Java-Spec-Version>
+                                    <Implementation-Build-Java-Version>${maven.compiler.target}</Implementation-Build-Java-Version>
+                                    <SCM-Git-Branch>${git.branch}</SCM-Git-Branch>
                                     <SCM-Git-Commit-ID>${git.commit.id}</SCM-Git-Commit-ID>
                                     <SCM-Git-Commit-ID-Abbrev>${git.commit.id.abbrev}</SCM-Git-Commit-ID-Abbrev>
                                     <SCM-Git-Commit-ID-Description>${git.commit.id.describe}</SCM-Git-Commit-ID-Description>
                                     <SCM-Git-Commit-Timestamp>${git.commit.time}</SCM-Git-Commit-Timestamp>
-                                    <SCM-Git-Commit-Dirty>${git.commit.dirty}</SCM-Git-Commit-Dirty>
+                                    <SCM-Git-Commit-Dirty>${git.dirty}</SCM-Git-Commit-Dirty>
+                                    <SCM-Git-Remote-Origin-URL>${git.remote.origin.url}</SCM-Git-Remote-Origin-URL>
                                 </manifestEntries>
                             </archive>
                         </configuration>
