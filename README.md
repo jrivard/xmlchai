@@ -18,3 +18,11 @@ What XML Chai is not good at:
 
 * Advanced/Complete XML feature access
 * Performance efficiencies available when working directly with w3c API
+
+
+## Changes 
+
+v1.0.1
+ * Disabled DTD External References by default
+ * Added XPath variable parameterization methods
+ * Fixed bugs identified by fb-contrib/spotbugs
