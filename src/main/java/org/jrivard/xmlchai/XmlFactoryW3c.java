@@ -167,7 +167,11 @@ class XmlFactoryW3c implements XmlFactory
         }
     }
 
-    static List<XmlElement> nodeListToElementList( final NodeList nodeList, final XmlDocumentW3c xmlDocumentW3c )
+    static List<XmlElement> nodeListToElementList(
+            final XmlFactory xmlFactory,
+            final NodeList nodeList,
+            final XmlDocumentW3c xmlDocumentW3c
+            )
     {
         if ( nodeList != null )
         {
@@ -180,7 +184,7 @@ class XmlFactoryW3c implements XmlFactory
                     final Node node = nodeList.item( i );
                     if ( node.getNodeType() == Node.ELEMENT_NODE )
                     {
-                        returnList.add( new XmlElementW3c( ( org.w3c.dom.Element ) node, xmlDocumentW3c ) );
+                        returnList.add( new XmlElementW3c( ( org.w3c.dom.Element ) node, xmlFactory, xmlDocumentW3c ) );
                     }
                 }
                 return Collections.unmodifiableList( returnList );
@@ -208,6 +212,6 @@ class XmlFactoryW3c implements XmlFactory
         final DocumentBuilder documentBuilder = getBuilder();
         final org.w3c.dom.Document document = documentBuilder.newDocument();
         final org.w3c.dom.Element element = document.createElement( elementName );
-        return new XmlElementW3c( element, null );
+        return new XmlElementW3c( element, this, null );
     }
 }

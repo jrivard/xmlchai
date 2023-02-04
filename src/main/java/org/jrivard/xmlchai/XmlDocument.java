@@ -128,5 +128,4 @@ public interface XmlDocument
      * @return The access mode of this document.
      */
     AccessMode getAccessMode();
-
 }

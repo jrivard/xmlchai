@@ -43,9 +43,16 @@ class XmlElementW3c implements XmlElement
     private final org.w3c.dom.Element element;
 
     /**
+     * The factory that made me.
+     */
+    private final XmlFactory factory;
+
+    /**
      * The parent document of this element.  If null, this element is detached from its parent.
      */
     private XmlDocumentW3c xmlDocument;
+
+
 
     /**
      * A local lock instance used only when mutations are done on detached elements.
@@ -53,8 +60,9 @@ class XmlElementW3c implements XmlElement
     private Lock localLock;
 
     @SuppressFBWarnings( "FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" )
-    XmlElementW3c( final org.w3c.dom.Element element, final XmlDocumentW3c xmlDocument )
+    XmlElementW3c( final org.w3c.dom.Element element, final XmlFactory factory, final XmlDocumentW3c xmlDocument )
     {
+        this.factory = Objects.requireNonNull( factory );
         this.element = Objects.requireNonNull( element );
         this.xmlDocument = xmlDocument;
     }
@@ -74,9 +82,20 @@ class XmlElementW3c implements XmlElement
         return localLock;
     }
 
+    @Override
+    public AccessMode getAccessMode()
+    {
+        if ( xmlDocument == null )
+        {
+            return AccessMode.MUTABLE;
+        }
+
+        return xmlDocument.getAccessMode();
+    }
+
     private void modificationCheck()
     {
-        if ( xmlDocument != null && xmlDocument.getAccessMode() == AccessMode.IMMUTABLE )
+        if ( getAccessMode() == AccessMode.IMMUTABLE )
         {
             throw new UnsupportedOperationException( "parent XmlDocument has modify mode set to immutable" );
         }
@@ -165,7 +184,7 @@ class XmlElementW3c implements XmlElement
         try
         {
             final NodeList nodeList = element.getChildNodes();
-            return XmlFactoryW3c.nodeListToElementList( nodeList, xmlDocument );
+            return XmlFactoryW3c.nodeListToElementList( factory, nodeList, xmlDocument );
         }
         finally
         {
@@ -183,7 +202,7 @@ class XmlElementW3c implements XmlElement
         try
         {
             final NodeList nodeList = element.getElementsByTagName( elementName );
-            return XmlFactoryW3c.nodeListToElementList( nodeList, xmlDocument );
+            return XmlFactoryW3c.nodeListToElementList( factory, nodeList, xmlDocument );
         }
         finally
         {
@@ -275,7 +294,7 @@ class XmlElementW3c implements XmlElement
         try
         {
             final NodeList nodeList = element.getChildNodes();
-            for ( final XmlElement child : XmlFactoryW3c.nodeListToElementList( nodeList, xmlDocument ) )
+            for ( final XmlElement child : XmlFactoryW3c.nodeListToElementList( factory, nodeList, xmlDocument ) )
             {
                 element.removeChild( ( ( XmlElementW3c ) child ).element );
                 ( ( XmlElementW3c ) child ).xmlDocument = null;
@@ -297,7 +316,7 @@ class XmlElementW3c implements XmlElement
         try
         {
             final NodeList nodeList = element.getElementsByTagName( elementName );
-            for ( final XmlElement child : XmlFactoryW3c.nodeListToElementList( nodeList, xmlDocument ) )
+            for ( final XmlElement child : XmlFactoryW3c.nodeListToElementList( factory, nodeList, xmlDocument ) )
             {
                 element.removeChild( ( ( XmlElementW3c ) child ).element );
                 ( ( XmlElementW3c ) child ).xmlDocument = null;
@@ -355,7 +374,7 @@ class XmlElementW3c implements XmlElement
 
         modificationCheck();
 
-        final XmlElement newNode = xmlDocument.getFactory().newElement( elementName );
+        final XmlElement newNode = factory.newElement( elementName );
         attachElement( newNode );
         return newNode;
     }
@@ -495,7 +514,7 @@ class XmlElementW3c implements XmlElement
         {
             final Node newNode = this.element.cloneNode( true );
             this.element.getOwnerDocument().adoptNode( newNode );
-            return new XmlElementW3c( ( org.w3c.dom.Element ) newNode, null );
+            return new XmlElementW3c( ( org.w3c.dom.Element ) newNode, factory, null );
         }
         finally
         {
@@ -515,7 +534,7 @@ class XmlElementW3c implements XmlElement
             {
                 return Optional.empty();
             }
-            return Optional.of( new XmlElementW3c( ( org.w3c.dom.Element ) parentElement, xmlDocument ) );
+            return Optional.of( new XmlElementW3c( ( org.w3c.dom.Element ) parentElement, factory, xmlDocument ) );
         }
         finally
         {

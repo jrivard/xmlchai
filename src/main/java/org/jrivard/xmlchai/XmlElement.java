@@ -199,4 +199,10 @@ public interface XmlElement
      * @return A new instance of the current element.
      */
     XmlElement copy();
+
+    /**
+     * Get the access mode of this document.
+     * @return The access mode of this document.
+     */
+    AccessMode getAccessMode();
 }

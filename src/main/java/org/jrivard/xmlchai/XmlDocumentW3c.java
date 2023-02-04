@@ -23,18 +23,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -81,12 +78,6 @@ class XmlDocumentW3c implements XmlDocument
         return document;
     }
 
-
-    XmlFactoryW3c getFactory()
-    {
-        return factory;
-    }
-
     public AccessMode getAccessMode()
     {
         return accessMode;
@@ -98,7 +89,7 @@ class XmlDocumentW3c implements XmlDocument
         lock.lock();
         try
         {
-            return new XmlElementW3c( document.getDocumentElement(), this );
+            return new XmlElementW3c( document.getDocumentElement(), factory, this );
         }
         finally
         {
@@ -167,7 +158,7 @@ class XmlDocumentW3c implements XmlDocument
 
             xPathVariableInjector.throwIfParamsUnused();
 
-            return XmlFactoryW3c.nodeListToElementList( nodeList, this );
+            return XmlFactoryW3c.nodeListToElementList( factory, nodeList, this );
         }
         catch ( final XPathExpressionException e )
         {
@@ -195,51 +186,4 @@ class XmlDocumentW3c implements XmlDocument
         }
     }
 
-    /**
-     * Internal helper to inject variables into xpath expressions.
-     */
-    private static class XPathVariableInjector
-    {
-        /** A result set of used variables.  */
-        private final Set<String> unusedKeys = new HashSet<>();
-
-        /** XPath object to be used by the base class. */
-        private final XPath xpath;
-
-        XPathVariableInjector( final Map<String, String> suppliedParams )
-        {
-            xpath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
-
-            final Map<String, String> copiedParams = new HashMap<>( suppliedParams == null ? Collections.emptyMap() : suppliedParams );
-
-            unusedKeys.addAll( copiedParams.keySet() );
-
-            xpath.setXPathVariableResolver( variableName ->
-            {
-                final String key = variableName.getLocalPart();
-                final String value = copiedParams.get( key );
-                if ( value != null )
-                {
-                    unusedKeys.remove( key );
-                }
-                return value;
-            } );
-        }
-
-        public XPath getXPath()
-        {
-            return xpath;
-        }
-
-        public void throwIfParamsUnused()
-        {
-            if ( !unusedKeys.isEmpty() )
-            {
-                final String key = unusedKeys.iterator().next();
-                throw new IllegalArgumentException( "xpath expression did not utilize variable $"
-                        + key
-                        + " for which a parameter value was included"  );
-            }
-        }
-    }
 }
